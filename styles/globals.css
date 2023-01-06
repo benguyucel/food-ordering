@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Open Sans", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  @apply text-white px-[30px] py-[8px] rounded-3xl bg-primary cursor-pointer hover:opacity-70 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+}
+.slick-dots {
+  @apply !-bottom-12;
+}
+.slider_home .slick-slider .slick-list .slider-item {
+  @apply container mx-auto ;
+}
+.slick-dots ul {
+  @apply flex items-center;
+}
+.slick-dots li {
+  @apply bg-white !w-4 !h-4 rounded-full  transition-all;
+}
+.slick-dots li.slick-active {
+  @apply bg-primary !w-5 !h-5 transition-all;
+}
+.slick-dots li button:before {
+  visibility: hidden;
+}
+
+.customer-slick .slick-slide {
+  padding: 0 8px;
+  box-sizing: border-box;
+}
