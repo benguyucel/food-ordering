@@ -29,7 +29,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
         />
         <Layout>
           <div className="pt-[88px]">
-            <ToastContainer />
             <Component {...pageProps} />
           </div>
         </Layout>

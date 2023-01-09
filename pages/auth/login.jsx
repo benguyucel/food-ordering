@@ -11,11 +11,11 @@ import { useSession, signIn, getSession } from "next-auth/react";
 
 const Login = () => {
   const { push } = useRouter();
-  const { data: session } = useSession();
   const onSubmit = async (values, actions) => {
     let options = { redirect: false, ...values };
     try {
       const res = await signIn("credentials", options);
+
       if (res.status === 200) push("/profile");
     } catch (error) {
       console.log(error);

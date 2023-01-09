@@ -4,14 +4,20 @@ import { profileSchema } from "../../../schema/profileSchema"
 import dbConnect from "../../../utils/dbConnect"
 import { validation } from "../../../utils/validate"
 import bcrypt from 'bcryptjs'
+import { getToken } from "next-auth/jwt"
 const handler = async (req, res) => {
-
+    const token = await getToken({ req })
     await dbConnect()
     const { method, query } = req
 
 
     if (method === "GET") {
-   
+        if (token) {
+            if (token?.user?.id !== query?.id) {
+                res.status(400).json({ message: "You're not able to access that api" })
+                return
+            }
+        }
         try {
             const user = await User.findById(query.id)
             const { password, ...rest } = user._doc

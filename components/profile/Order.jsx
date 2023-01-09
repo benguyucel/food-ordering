@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Title from "../ui/Title";
 import axios from "axios";
-import api from "../../api";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -9,7 +8,7 @@ const Order = () => {
   useEffect(() => {
     const getOrders = async () => {
       try {
-        const res = await api.get(`/orders`);
+        const res = await axios.get(`/orders`);
         setOrders(
           res.data.filter((order) => order.customer === currentUser?.fullName)
         );

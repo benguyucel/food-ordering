@@ -1,72 +1,49 @@
-import NextAuth from "next-auth/next";
-import GithubProvider from "next-auth/providers/github"
+import GitHubProvider from "next-auth/providers/github";
+import NextAuth from "next-auth"
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
+import clientPromise from "../../../lib/mongodb"
 import CredentialsProvider from "next-auth/providers/credentials";
-import dbConnect from "../../../utils/dbConnect";
-import User from "../../../mongoose/User"
 import bcrypt from 'bcryptjs'
-dbConnect();
-export const authOptions = {
-    // adapter: MongoDBAdapter(clientPromise),
+import User from "../../../mongoose/User";
+
+export default NextAuth({
+    adapter: MongoDBAdapter(clientPromise),
+    session: {
+        strategy: "jwt",
+        maxAge: 2500,
+    },
     providers: [
-        GithubProvider({
+        GitHubProvider({
             clientId: process.env.GITHUB_ID,
             clientSecret: process.env.GITHUB_SECRET
-        })
-    ],
-    callbacks: {
-        session: async ({ session, token, user }) => {
-            session.accessToken = token.accessToken
-            session.user.id = token.sub
-            return session
-        },
-    },
-    jwt: {
-        maxAge: 60 * 60 * 24 * 30,
-        // You can define your own encode/decode functions for signing and encryption
-
-    },
-    providers: [
+        }),
         CredentialsProvider({
             name: "Credentials",
             async authorize(credentials, req) {
-                const email = credentials.email;
-                const password = credentials.password;
-                const user = await User.findOne({ email: email })
-                if (!user) {
-                    throw new Error("You haven't registered yet!");
-                }
+                const { email, password } = credentials
+                const user = await User.findOne({ email })
                 if (user) {
-                    return signInUser({ user, password });
+                    const isMAtch = await bcrypt.compare(password, user.password);
+                    if (isMAtch) {
+                        return user
+                    }
                 }
             }
         })
     ],
-    secret: process.env.SECRET_JWT,
-    pages: {
-        signIn: "/auth/login",
-    },
-    cookies: {
-        sessionToken: {
-            name: `sessionToken`,
-            options: {
-                httpOnly: true,
-                sameSite: 'lax',
-                path: '/',
-                secure: true
+    callbacks: {
+        session: async ({ session, token }) => {
+            if (session?.user) {
+                session.user.id = token.uid;
             }
+            return session;
+        },
+        jwt: async ({ user, token }) => {
+            if (user) {
+                token.uid = user._id;
+            }
+            return token;
         },
     },
-    database: process.env.MONGO_URI,
-
-}
-
-const signInUser = async ({ user, password }) => {
-    const isMAtch = await bcrypt.compare(password, user.password);
-    if (!isMAtch) {
-        throw new Error("Incorrect password!");
-    }
-    return user;
-};
-
-export default NextAuth(authOptions)
-
+    secret: process.env.NEXTAUTH_SECRET
+})

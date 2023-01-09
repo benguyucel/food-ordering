@@ -88,7 +88,7 @@ export async function getServerSideProps({ req }) {
     };
   }
   const user = await axios.get(
-    `${process.env.NEXTAUTH_URL_API}/users/${session.user.id}`
+    `${process.env.NEXT_PUBLIC_API_URL}/users/${session.user.id}`
   );
 
   if (!user) {
