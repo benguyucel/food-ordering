@@ -1,20 +1,23 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import Input from "../../components/form/Input";
 import Title from "../../components/ui/Title";
 import { registerSchema } from "../../schema/registerSchema";
 
 const Register = () => {
+  const { push } = useRouter()
   const onSubmit = async (values, actions) => {
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/register`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
         values
       );
       if (res.status === 200) {
         toast.success("User created successfully");
+        push('/auth/login')
       }
     } catch (error) {
       toast.error(error.response.data.message);
