@@ -1,22 +1,23 @@
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
-import { includes } from "lodash";
+
 import { withAuth } from "next-auth/middleware"
+import { includes } from 'lodash';
+
 
 const onylAdminCanReach = [
     '/admin',
     '/api/admin',
 ]
-const isAdminRoute = (pathname: string) => {
+const isAdminRoute = (pathname) => {
     return onylAdminCanReach.some(route => pathname.startsWith(route))
 }
 
 export default withAuth(
-    async function middleware(req: NextRequest) {
+    async function middleware(req) {
 
-        const token: any = await getToken({ req })
+        const token = await getToken({ req })
         const { pathname } = req.nextUrl;
-        console.log(token)
         //if token does not exist retun home
         if (!token) return NextResponse.redirect(new URL('/', `${process.env.NEXT_API_BASE_URL}`))
         //Only admin can reach
