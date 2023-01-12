@@ -1,10 +1,8 @@
 import Product from "../../../mongoose/Product"
 import dbConnect from "../../../utils/dbConnect";
-import { getToken } from "next-auth/jwt"
 
 const handler = async (req, res) => {
-    const secret = process.env.SECRET_JWT
-    const token = await getToken({ req, secret })
+   
     await dbConnect()
     const { method } = req
     if (method === "GET") {

@@ -7,6 +7,7 @@ import Password from "../../components/profile/Password";
 import Order from "../../components/profile/Order";
 import { signOut, getSession } from "next-auth/react";
 import axios from "axios";
+import { fetchSSR } from "../../utils/fetchSSR";
 const Profile = ({ userData }) => {
   const [tabs, setTabs] = useState(0);
   const { push } = useRouter();
@@ -34,36 +35,32 @@ const Profile = ({ userData }) => {
         </div>
         <ul className="text-center font-semibold">
           <li
-            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${
-              tabs === 0 && "bg-primary text-white"
-            }`}
+            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${tabs === 0 && "bg-primary text-white"
+              }`}
             onClick={() => setTabs(0)}
           >
             <i className="fa fa-home"></i>
             <button className="ml-1 ">Account</button>
           </li>
           <li
-            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${
-              tabs === 1 && "bg-primary text-white"
-            }`}
+            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${tabs === 1 && "bg-primary text-white"
+              }`}
             onClick={() => setTabs(1)}
           >
             <i className="fa fa-key"></i>
             <button className="ml-1">Password</button>
           </li>
           <li
-            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${
-              tabs === 2 && "bg-primary text-white"
-            }`}
+            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${tabs === 2 && "bg-primary text-white"
+              }`}
             onClick={() => setTabs(2)}
           >
             <i className="fa fa-motorcycle"></i>
             <button className="ml-1">Orders</button>
           </li>
           <li
-            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${
-              tabs === 3 && "bg-primary text-white"
-            }`}
+            className={`border w-full p-3 cursor-pointer hover:bg-primary hover:text-white transition-all ${tabs === 3 && "bg-primary text-white"
+              }`}
             onClick={() => handleSignOut()}
           >
             <i className="fa fa-sign-out"></i>
@@ -87,10 +84,7 @@ export async function getServerSideProps({ req }) {
       },
     };
   }
-  const user = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/users/${session.user.id}`
-  );
-
+  const user = await fetchSSR(`${process.env.NEXT_PUBLIC_API_URL}/users/${session.user.id}`, req)
   if (!user) {
     return {
       redirect: {

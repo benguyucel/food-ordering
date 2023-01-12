@@ -6,22 +6,16 @@ import { validation } from "../../../utils/validate"
 import bcrypt from 'bcryptjs'
 import { getToken } from "next-auth/jwt"
 const handler = async (req, res) => {
-    const token = await getToken({ req })
+
     await dbConnect()
     const { method, query } = req
 
 
     if (method === "GET") {
-        if (token) {
-            if (token?.user?.id !== query?.id) {
-                res.status(400).json({ message: "You're not able to access that api" })
-                return
-            }
-        }
         try {
-            const user = await User.findById(query.id)
-            const { password, ...rest } = user._doc
-            res.status(200).json(rest)
+            const user = await User.findById(query.id).select('-password')
+
+            res.status(200).json(user)
         } catch (error) {
             res.status(400).json({ message: "Error" })
         }

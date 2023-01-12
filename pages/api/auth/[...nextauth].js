@@ -5,8 +5,8 @@ import clientPromise from "../../../lib/mongodb"
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from 'bcryptjs'
 import User from "../../../mongoose/User";
-
-export default NextAuth({
+import dbConnect from "../../../utils/dbConnect";
+export const authOptions = {
     adapter: MongoDBAdapter(clientPromise),
     session: {
         strategy: "jwt",
@@ -21,8 +21,10 @@ export default NextAuth({
             name: "Credentials",
             async authorize(credentials, req) {
                 const { email, password } = credentials
+                console.log(credentials)
                 const user = await User.findOne({ email })
                 if (user) {
+                    console.log(user)
                     const isMAtch = await bcrypt.compare(password, user.password);
                     if (isMAtch) {
                         return user
@@ -35,15 +37,18 @@ export default NextAuth({
         session: async ({ session, token }) => {
             if (session?.user) {
                 session.user.id = token.uid;
+                session.user.role = token.role
             }
             return session;
         },
         jwt: async ({ user, token }) => {
             if (user) {
                 token.uid = user._id;
+                token.role = user.role
             }
             return token;
         },
     },
     secret: process.env.NEXTAUTH_SECRET
-})
+}
+export default NextAuth(authOptions)

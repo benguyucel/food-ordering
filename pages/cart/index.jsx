@@ -7,6 +7,7 @@ import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { fetchSSR } from "../../utils/fetchSSR";
 
 const Cart = ({ userInfo }) => {
   const cart = useSelector((state) => state.cart);
@@ -88,8 +89,8 @@ const Cart = ({ userInfo }) => {
                       <td className="py-4 px-6 font-medium whitespace-nowrap hover:text-white">
                         {product.extras.length > 0
                           ? product.extras.map((item) => (
-                              <span key={item._id}>{item.text}, </span>
-                            ))
+                            <span key={item._id}>{item.text}, </span>
+                          ))
                           : "empty"}
                       </td>
                       <td className="py-4 px-6 font-medium whitespace-nowrap hover:text-white">
@@ -145,8 +146,9 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
-  const user = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/users/${session.user.id}`
+  const user = await fetchSSR(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/${session.user.id}`,
+    context.req
   );
   const { fullName, address } = user.data;
   return {
