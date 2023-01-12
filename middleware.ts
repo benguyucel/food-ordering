@@ -23,18 +23,18 @@ export default withAuth(
             return NextResponse.redirect(new URL('/', `${process.env.NEXT_API_BASE_URL}`))
         }
         if (pathname.startsWith('/api/users')) {
-             if (userId !== "register") {
+
             let userId = pathname.split('/')[3]
-                if (typeof userId === "undefined" && !['admin'].includes(token.role)) {
-                    return NextResponse.redirect(new URL('/', `${process.env.NEXT_API_BASE_URL}`))
-                }
-                if (userId !== token.uid || !['admin', 'user'].includes(token.role)) {
-                    return NextResponse.redirect(new URL('/', `${process.env.NEXT_API_BASE_URL}`))
-                }
+            if (typeof userId === "undefined" && !['admin'].includes(token.role)) {
+                return NextResponse.redirect(new URL('/', `${process.env.NEXT_API_BASE_URL}`))
             }
-             }
+            if (userId !== token.uid || !['admin', 'user'].includes(token.role)) {
+                return NextResponse.redirect(new URL('/', `${process.env.NEXT_API_BASE_URL}`))
+            }
+
         }
-    
+    }
+
 )
 export const config = {
     matcher: ['/api/users/:path*', '/api/admin/:path*', '/admin/:path*']
